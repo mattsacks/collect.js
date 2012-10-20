@@ -1,25 +1,13 @@
 ;(function(/* exports */) {
-  var utils = {};
+  function Collector() {};
 
-  function Collector(options) {
-    this.options = options || {};
-  };
-
-  // configure the Collector object with updated options.
-  // - **config** (Object: {}) updated config
-  // - **reset** (Boolean: _false_) if the options should be reset to the
-  // defaults + the passed in configuration object
-  Collector.prototype.configure = function(config, reset) {
-  };
-
-  // core function - loops over an array of data and applies a mapping function
-  // for each object in the array. after each mapping is applied, a rolling
-  // reduction is then called onto the datum. for post-reduction, use
-  // Collector.total
-  // - **data** (Array: []) array of objects to apply mappings to
-  // - **mappings** (Object: {}) an object of unique keys whose values are
+  // loops over an array of data and applies a mapping function for each object
+  // in the array. after each mapping is applied, a rolling reduction is then
+  // called onto the datum. for post-reduction, use Collector.total
+  // - **data** (Array): array of objects to apply mappings to
+  // - **mappings** (Object): an object of unique keys whose values are
   // functions that will be called onto each object in the data
-  // - **reductions** (Object: {}) similar to mappings, these are functions
+  // - **reductions** (Object): similar to mappings, these are functions
   // called after mapping a datum. each key needs to be exact to the same key in
   // mappings to coordinate the data.
   //
@@ -33,29 +21,51 @@
     var collection = {};
 
     for (var key in mappings) {
-      var map = mappings[key];
-      var reduce;
-      reductions != null && (reduce = reductions[key]);
-
+      var map = mappings[key], reduce;
       if (map == null) continue;
 
-      // create the result of the map
-      collection[key] = collection[key] || [];
+      reductions != null && (reduce = reductions[key]);
 
-      // TODO use utils.each?
+      // a single key's resulting collection
+      var dataset = collection[key] = collection[key] || [];
+
       data.forEach(function(datum, i) {
-        var result = map(datum, collection[key], i);
-        // if a reduce function is defined for this key and the mapping returned
-        // a result, then call a reduction on it
+        var result  = map(datum, i, dataset);
+
+        // if a reduce function is defined for this key then call a reduction
         if (reduce != null && result != null)
-          reduce(result, datum, collection[key], i);
+          reduce(result, datum, i, dataset);
+        else if (reduce != null)
+          reduce(datum, i, dataset);
       });
     };
 
-    // the result
+    return collection;
+  };
+
+  // loops over the set of data applies an additional reduction to the bin
+  // - **collection** (Object): a collection as a result of calling
+  // Collector.collector, or just some object you want to iterate over with
+  // specific functions
+  // - **reductions** (Object): an object with keys that correspond to keys in
+  // collection, for which each value in this object is a function applied to
+  // the array stored at the collection's key
+  Collector.prototype.total = function(collection, reductions) {
+    if (collection == null || typeof collection !== 'object') return;
+    if (reductions == null || typeof reductions !== 'object') return;
+
+    for (var key in collection) {
+      var reduce = reductions[key];
+      // no reduction found for this key
+      if (reduce == null) continue;
+      var result = reduce(collection[key]);
+      // set the result if a value was returned
+      if (result != null) collection[key] = result;
+    }
+    
     return collection;
   };
 
   window.Collector = Collector;
   window.collector = new Collector;
-})();
+})(/* exports */);

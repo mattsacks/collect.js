@@ -7,32 +7,38 @@ describe("setup", function() {
     it("exposes the right stuff", function() {
       expect(Collector).not.to.be(undefined);
       expect(collector).not.to.be(undefined);
-      expect(window['utils']).to.be(undefined);
+      // TODO test local functions
     });
   });
 });
 
 // if none are provided, some samples
 Test.samples = function() {
-  var data, mappings, reductions;
-  data = ['one', 'two', 'three'];
+  var data, mappings, reductions, postReductions;
+  data = [0, 1, 2];
   mappings = {
-    test: function(x, bin, i) {
-      // test if it's an even number or double the index + 1
-      bin[i] = (i + 1) * 2;
-      // test if the index is the string
-      bin[x] = i + 1;
-      return data[i];
+    test: function(x, i, dataa) {
+      var z = x + 2;
+      dataa[i] = z; // set it to test if an even number
+      return z;
     }
   };
   reductions = {
-    test: function(result, x, bin, i) {
+    test: function(z, x, i, dataa) {
       // test if it's an odd number
-      bin[i] += 1;
+      dataa[i] = z - 1;
+    }
+  };
+  postReductions = {
+    test: function(bin) {
+      // make it even AGAIN!
+      return bin.map(function(x) {
+        return x += 1;
+      });
     }
   };
 
-  return [data, mappings, reductions];
+  return [data, mappings, reductions, postReductions];
 };
 
 
@@ -46,24 +52,27 @@ Test.collect = function(data, mappings, reductions) {
   return collector.collect(data, mappings, reductions);
 };
 
+// totals the rest of the collection doings
+Test.total = function(collection, reductions) {
+  return collector.total(collection, reductions);
+};
+
 describe("core", function() {
+  var samples, data, mappings, reductions, postReductions;
+
+  beforeEach(function() {
+    samples        = Test.samples();
+    data           = samples[0];
+    mappings       = samples[1];
+    reductions     = samples[2];
+    postReductions = samples[3];
+  });
+
   describe("collect", function() {
-    var samples, data, mappings, reductions;
-
-    beforeEach(function() {
-      samples    = Test.samples();
-      data       = samples[0];
-      mappings   = samples[1];
-      reductions = samples[2];
-    });
-
     it("loops through data and calls mappings on each datum", function() {
       var result = Test.map(data, mappings);
       expect(result).to.be.ok();
-
-      expect(result.test.one).to.be(1);
-      expect(result.test.two).to.be(2);
-      expect(result.test.three).to.be(3);
+      expect(result.test).to.be.ok();
 
       // reductions shouldn't have been run, so make sure the index is even
       expect(result.test[0] % 2).to.be(0);
@@ -72,9 +81,34 @@ describe("core", function() {
     it("loops through the data and reduces the mappings", function() {
       var result = Test.collect(data, mappings, reductions);
       expect(result).to.be.ok();
+      expect(result.test).to.be.ok();
 
       // reductions on index are odd
       expect(result.test[0] % 2).not.to.be(0);
+    });
+  });
+
+  describe("total", function(){
+    it("loops through the collection and calls a reduction", function() {
+      var result = collector.collect(data, mappings, reductions);
+      collector.total(result, postReductions);
+
+      expect(result).to.be.ok();
+      expect(result.test).to.be.ok();
+      expect(result.test[0] % 2).to.be(0);
+    });
+  });
+});
+
+describe("extra", function() {
+  describe("tips", function() {
+    it("uses closures for awesomeness", function() {
+      var data = [];
+      var mappings = {
+        test: function(x, bin) {
+          // TODO
+        }
+      };
     });
   });
 });
