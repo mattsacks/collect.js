@@ -1,9 +1,11 @@
 ;(function(/* exports */) {
+  // constructor
   function Collector() {};
 
   // loops over an array of data and applies a mapping function for each object
   // in the array. after each mapping is applied, a rolling reduction is then
   // called onto the datum. for post-reduction, use Collector.total
+  // 
   // - **data** (Array): array of objects to apply mappings to
   // - **mappings** (Object): an object of unique keys whose values are
   // functions that will be called onto each object in the data
@@ -27,20 +29,24 @@
       var dataset = collection[key] = collection[key] || [];
 
       data.forEach(function(datum, i) {
-        var result  = map(datum, i, dataset);
+        var result = map(datum, i, dataset);
 
         // if a reduce function is defined for this key then call a reduction
-        if (reduce != null && result != null)
-          reduce(result, datum, i, dataset);
-        else if (reduce != null)
-          reduce(datum, i, dataset);
+        if (reduce != null) {
+          // if there was a result from the mapping, call it as the first
+          // argument. otherwise, same format as the mapping
+          result != null ?
+            reduce(result, datum, i, dataset) :
+            reduce(datum, i, dataset);
+        }
       });
-    };
+    }
 
     return collection;
   };
 
   // loops over the set of data applies an additional reduction to the bin
+  //
   // - **collection** (Object): a collection as a result of calling
   // Collector.collector, or just some object you want to iterate over with
   // specific functions
@@ -63,6 +69,6 @@
     return collection;
   };
 
-  window.Collector = Collector;
-  window.collector = new Collector;
+  window.Collector = Collector;     // expose the class
+  window.collector = new Collector; // expose an initialized collector
 })(/* exports */);
