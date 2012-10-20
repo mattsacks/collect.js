@@ -18,9 +18,9 @@ Test.samples = function() {
   data = [0, 1, 2];
   mappings = {
     test: function(x, i, dataa) {
-      var z = x + 2;
-      dataa[i] = z; // set it to test if an even number
-      return z;
+      x += 2;
+      dataa[i] = x; // set it to test if an even number
+      return x;
     }
   };
   reductions = {
@@ -102,13 +102,28 @@ describe("core", function() {
 
 describe("extra", function() {
   describe("tips", function() {
-    it("uses closures for awesomeness", function() {
-      var data = [];
+    it("uses closures for awesomeness (see source)", function() {
+      var data = [3, 6, 4, 8];
+
       var mappings = {
-        test: function(x, bin) {
-          // TODO
+        test: function(x) {
+          // if > 5 then divide by two, otherwise multiply
+          return x > 5 ? (x / 2) : (x * 2);
         }
       };
+      var reductions = {
+        test: function(res, x, i, bin) {
+          // accessing data from outside this closure!
+          var index = data.indexOf(res);
+          bin[index] = res;
+        }
+      };
+
+      var result = collector.collect(data, mappings, reductions);
+
+      expect(result).to.be.ok();
+      expect(result.test).to.be.ok();
+      expect(result.test).to.eql(data);
     });
   });
 });
