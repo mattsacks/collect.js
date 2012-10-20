@@ -10,9 +10,6 @@
   // - **reductions** (Object): similar to mappings, these are functions
   // called after mapping a datum. each key needs to be exact to the same key in
   // mappings to coordinate the data.
-  //
-  // TODO:
-  // - support webworkers based on data length and options configuration
   Collector.prototype.collect = function(data, mappings, reductions) {
     if (data == null || data.length === 0) return;
     if (mappings == null || typeof mappings !== 'object') return;

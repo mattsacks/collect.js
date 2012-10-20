@@ -111,6 +111,7 @@ describe("extra", function() {
           return x > 5 ? (x / 2) : (x * 2);
         }
       };
+
       var reductions = {
         test: function(res, x, i, bin) {
           // accessing data from outside this closure!
