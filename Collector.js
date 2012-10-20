@@ -34,11 +34,21 @@
 
     for (var key in mappings) {
       var map = mappings[key];
+      var reduce;
+      reductions != null && (reduce = reductions[key]);
+
+      if (map == null) continue;
+
+      // create the result of the map
       collection[key] = collection[key] || [];
 
       // TODO use utils.each?
       data.forEach(function(datum, i) {
-        map(datum, collection[key], i);
+        var result = map(datum, collection[key], i);
+        // if a reduce function is defined for this key and the mapping returned
+        // a result, then call a reduction on it
+        if (reduce != null && result != null)
+          reduce(result, datum, collection[key], i);
       });
     };
 
