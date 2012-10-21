@@ -1,4 +1,4 @@
-// Collector.js v0.1
+// collector.js v0.1
 // by Matt Sacks <matt.s.sacks@gmail.com>
 
 ;(function(window) {

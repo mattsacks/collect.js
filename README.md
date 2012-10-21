@@ -48,7 +48,7 @@ var reductions = {
 }
 
 var collection = collector.collect(data, mappings, reductions);
-collection.test; // 1 + 2 + 3 = 6;
+collection.test === 6; // 1 + 2 + 3
 ```
 
 ## License
