@@ -1,6 +1,12 @@
+// Collector.js v0.1
+// by Matt Sacks <matt.s.sacks@gmail.com>
+
 ;(function(/* exports */) {
   // constructor
   function Collector() {};
+
+  // versioning
+  Collector.version = Collector.v = '0.1';
 
   // loops over an array of data and applies a mapping function for each object
   // in the array. after each mapping is applied, a rolling reduction is then
