@@ -10,9 +10,9 @@
   // version
   Collector.version = Collector.v = '0.1';
 
-  // loops over an array of data and applies a mapping function for each object
-  // in the array. after each mapping is applied, a rolling reduction is then
-  // called onto the datum. for post-reduction, use Collector.total
+  // loops over an array of data and applies a mapping function for each item in
+  // the array. after each mapping is applied, a rolling reduction is then
+  // called onto the datum.
   // 
   // - **data** (Array): array of data to call mappings and reductions onto
   // - **mappings** (Object): an object of unique keys whose values are
@@ -21,8 +21,7 @@
   // called after mapping a datum. each key needs to be exact to the same key in
   // mappings to coordinate the data.
   Collector.prototype.collect = function(data, mappings, reductions) {
-    if (data == null || data.length === 0) return;
-    if (mappings == null || typeof mappings !== 'object') return;
+    if (data == null || mappings == null) return;
 
     // the returned object
     var collection = {};

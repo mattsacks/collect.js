@@ -1,6 +1,11 @@
 # Collector.js
 
-Sorta like MapReduce. (currently) Not distributed.
+Client-side MapReduce
+
+## Why
+By defining functions assigned to unique keys in an object, we can use the
+closure to run any code local to whatever the current scope is. Anonymous
+functions make this super awesome. 
 
 ## How to use
 Including Collector.js on your page will expose two variables, `Collector` and
@@ -12,60 +17,44 @@ dataset and runs a unique mapping across each item of data. if reductions, is
 provided - it will run those over the mapped dataset.
 
 * `data` (Array): an array of data to iterate across
-* `mappings` (Object): an object of keys to functions that will be called on each
-  datum in data. mapping signature should look like `function(datum, i,
+* `mappings` (Object): an object of keys to functions that will be called on
+  each datum in data. mapping signature should look like `function(datum, i,
   dataset)` where dataset is an empty array of the returned result
 * `reductions` ( _optional_ Object): an object of identical keys to that of
   `mappings` that gets called after each mapping is called on data. iff the
-  mapping function **returns** a result, the signature will be `function(result,
-  datum, i)` otherwise it will be identical to that of the `mappings` function
-  signature.
-
-`.total(_collection_, _mappings_)` - an additional function to run mappings
-across a dataset that had been previously collected: 
-
-* `collection` (Object): an object of unique keys corresponding to an array of
-  data as it's value. assumed to be the result of `collector.collect()`
-* `mappings` (Object): similar to `.collect`, this object needs to have
-  identical keys to that of `collection` where the value is a function that will
-  get processed on the dataset. function signature is `function(dataset)`.
+  mapping function **returns** a result, the signature will be
+  `function(current, result, datum, i)` otherwise it will be `function(current,
+  datum, i)`. this function **must** return a value in order for it to be of any
+  real use
 
 ## Example
-Let's do a default map and reduction and also use closures for a rolling
-reduction.
+A simple map and reduction using numbers.
 
 ```javascript
-var data = [2, 1, 0];
-var sum  = 0;
+var data = [0, 1, 2];
 
 var mappings = {
-  test: function(x, i, dataset) {
-    return i;
-  },
-  closured: function(x, i, dataset) {
+  test: function(x, i) {
     return x;
   }
 };
 
 var reductions = {
-  test: function(result, x, i, dataset) {
-    // this is effectively i + 1, but map this result as well
-    return result + 1;
+  test: function(current, result) {
+    // if current hasn't been set yet (this is the first call of reduce), then
+    // just return the result of the first mapping. otherwise, add them.
+    return current == null ? result : current + result; 
   },
-  closured: function(result, x, i, dataset) {
-    sum += result;
-  }
 }
 
 var collection = collector.collect(data, mappings, reductions);
-collection.test; // [1, 2, 3]
-sum === 3; // true, the sum of 2 + 1 + 0
+collection.test; // 3
 ```
 
 ## License
 (The MIT License)
 
-Copyright (c) 2011 Matt Sacks &lt;matt.s.sacks@gmail.com&gt;
+Copyright (c) Matt Sacks &lt;matt.s.sacks@gmail.com&gt;
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the 'Software'), to deal in
