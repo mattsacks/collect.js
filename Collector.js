@@ -6,7 +6,7 @@
   // in the array. after each mapping is applied, a rolling reduction is then
   // called onto the datum. for post-reduction, use Collector.total
   // 
-  // - **data** (Array): array of objects to apply mappings to
+  // - **data** (Array): array of data to call mappings and reductions onto
   // - **mappings** (Object): an object of unique keys whose values are
   // functions that will be called onto each object in the data
   // - **reductions** (Object): similar to mappings, these are functions
@@ -35,10 +35,12 @@
         if (reduce != null) {
           // if there was a result from the mapping, call it as the first
           // argument. otherwise, same format as the mapping
-          result != null ?
+          var result = result != null ?
             reduce(result, datum, i, dataset) :
             reduce(datum, i, dataset);
         }
+
+        if (result != null) dataset.push(result);
       });
     }
 
@@ -50,19 +52,18 @@
   // - **collection** (Object): a collection as a result of calling
   // Collector.collector, or just some object you want to iterate over with
   // specific functions
-  // - **reductions** (Object): an object with keys that correspond to keys in
+  // - **mappings** (Object): an object with keys that correspond to keys in
   // collection, for which each value in this object is a function applied to
   // the array stored at the collection's key
-  Collector.prototype.total = function(collection, reductions) {
+  Collector.prototype.total = function(collection, mappings) {
     if (collection == null || typeof collection !== 'object') return;
-    if (reductions == null || typeof reductions !== 'object') return;
+    if (mappings == null || typeof mappings !== 'object') return;
 
     for (var key in collection) {
-      var reduce = reductions[key];
-      // no reduction found for this key
-      if (reduce == null) continue;
-      var result = reduce(collection[key]);
-      // set the result if a value was returned
+      var map = mappings[key];
+      if (map == null) continue;
+
+      var result = map(collection[key]);
       if (result != null) collection[key] = result;
     }
     

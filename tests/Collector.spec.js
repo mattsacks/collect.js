@@ -86,6 +86,25 @@ describe("core", function() {
       // reductions on index are odd
       expect(result.test[0] % 2).not.to.be(0);
     });
+    
+    it("maps the result of a reduction onto the dataset", function() {
+      mappings = {
+        test: function(x, i) {
+          return x;
+        }
+      };
+
+      reductions = {
+        test: function(res) {
+          return res;
+        }
+      };
+
+      var result = Test.collect(data, mappings, reductions);
+      expect(result).to.be.ok();
+      expect(result.test).to.be.ok();
+      expect(data).to.eql(result.test);
+    });
   });
 
   describe("total", function(){
@@ -104,6 +123,7 @@ describe("extra", function() {
   describe("tips", function() {
     it("uses closures for awesomeness (see source)", function() {
       var data = [3, 6, 4, 8];
+      var alt  = [];
 
       var mappings = {
         test: function(x) {
@@ -116,7 +136,9 @@ describe("extra", function() {
         test: function(res, x, i, bin) {
           // accessing data from outside this closure!
           var index = data.indexOf(res);
-          bin[index] = res;
+
+          bin[index] = res; // the collected data stream
+          alt[i] = res; // CLOSURES MAN
         }
       };
 
@@ -125,6 +147,7 @@ describe("extra", function() {
       expect(result).to.be.ok();
       expect(result.test).to.be.ok();
       expect(result.test).to.eql(data);
+      expect(result.test).not.to.eql(alt);
     });
   });
 });
