@@ -1,11 +1,13 @@
 // Collector.js v0.1
 // by Matt Sacks <matt.s.sacks@gmail.com>
 
-;(function(/* exports */) {
+;(function(window) {
   // constructor
-  function Collector() {};
+  function Collector(options) {
+    this.options = options || {};
+  };
 
-  // versioning
+  // version
   Collector.version = Collector.v = '0.1';
 
   // loops over an array of data and applies a mapping function for each object
@@ -25,57 +27,38 @@
     // the returned object
     var collection = {};
 
-    for (var key in mappings) {
-      var map = mappings[key], reduce;
-      if (map == null) continue;
+    data.forEach(function(datum, i) {
+      for (var key in mappings) {
+        var map = mappings[key], reduce;
+        if (map == null) continue;
 
-      reductions != null && (reduce = reductions[key]);
+        reductions != null && (reduce = reductions[key]);
 
-      // a single key's resulting collection
-      var dataset = collection[key] = collection[key] || [];
+        // call a map on the piece of data
+        var result  = map(datum, i);
+        var rolling = collection[key];
 
-      data.forEach(function(datum, i) {
-        var result = map(datum, i, dataset);
-
-        // if a reduce function is defined for this key then call a reduction
-        if (reduce != null) {
-          // if there was a result from the mapping, call it as the first
-          // argument. otherwise, same format as the mapping
-          var result = result != null ?
-            reduce(result, datum, i, dataset) :
-            reduce(datum, i, dataset);
+        // if a reduce function isn't defined for this key, then just map
+        if (reduce == null) {
+          collection[key] = collection[key] || [];
+          collection[key].push(result);
+          return; // continue
         }
 
-        if (result != null) dataset.push(result);
-      });
-    }
+        // if there was a result from the mapping, call it as the first
+        // argument.  otherwise, same format as the mapping
+        result = result != null ?
+          reduce(rolling, result, datum, i) :
+          reduce(rolling, datum, i);
+
+        if (result != null) collection[key] = result;
+      }
+    });
 
     return collection;
   };
 
-  // loops over the set of data applies an additional reduction to the bin
-  //
-  // - **collection** (Object): a collection as a result of calling
-  // Collector.collector, or just some object you want to iterate over with
-  // specific functions
-  // - **mappings** (Object): an object with keys that correspond to keys in
-  // collection, for which each value in this object is a function applied to
-  // the array stored at the collection's key
-  Collector.prototype.total = function(collection, mappings) {
-    if (collection == null || typeof collection !== 'object') return;
-    if (mappings == null || typeof mappings !== 'object') return;
-
-    for (var key in collection) {
-      var map = mappings[key];
-      if (map == null) continue;
-
-      var result = map(collection[key]);
-      if (result != null) collection[key] = result;
-    }
-    
-    return collection;
-  };
-
-  window.Collector = Collector;     // expose the class
-  window.collector = new Collector; // expose an initialized collector
-})(/* exports */);
+  // expose class and default instantiation
+  window.Collector = Collector;
+  window.collector = new Collector;
+})(window);
