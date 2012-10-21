@@ -12,7 +12,7 @@ Including Collector.js on your page will expose two variables, `Collector` and
 `collector` on the `window` object. `Collector` is a class for creating
 instances of itself, `collector` is a vanilla instantiation.
 
-`.collect(_data_, _mappings_, _reductions_)` - the main function, it takes in a
+`.collect(data, mappings[, reductions])` - the main function, it takes in a
 dataset and runs a unique mapping across each item of data. if reductions, is
 provided - it will run those over the mapped dataset.
 
@@ -20,10 +20,10 @@ provided - it will run those over the mapped dataset.
 * `mappings` (Object): an object of keys to functions that will be called on
   each datum in data. mapping signature should look like `function(datum, i,
   dataset)` where dataset is an empty array of the returned result
-* `reductions` ( _optional_ Object): an object of identical keys to that of
+* `reductions` (_optional_ Object): an object of identical keys to that of
   `mappings` that gets called after each mapping is called on data. iff the
   mapping function **returns** a result, the signature will be
-  `function(current, result, datum, i)` otherwise it will be `function(current,
+  `function(current, result, datum, i)`. otherwise it will be `function(current,
   datum, i)`. this function **must** return a value in order for it to be of any
   real use
 
@@ -35,20 +35,20 @@ var data = [0, 1, 2];
 
 var mappings = {
   test: function(x, i) {
-    return x;
+    return x + 1;
   }
 };
 
 var reductions = {
   test: function(current, result) {
     // if current hasn't been set yet (this is the first call of reduce), then
-    // just return the result of the first mapping. otherwise, add them.
+    // just return the result of the first mapping.  otherwise, add them.
     return current == null ? result : current + result; 
   },
 }
 
 var collection = collector.collect(data, mappings, reductions);
-collection.test; // 3
+collection.test; // 1 + 2 + 3 = 6;
 ```
 
 ## License
