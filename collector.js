@@ -41,7 +41,7 @@
         if (reduce == null) {
           collection[key] = collection[key] || [];
           collection[key].push(result);
-          return; // continue
+          continue;
         }
 
         // if there was a result from the mapping, call it as the first
