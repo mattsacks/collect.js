@@ -18,8 +18,8 @@ provided - it will run those over the mapped dataset.
 
 * `data` (Array): an array of data to iterate across
 * `mappings` (Object): an object of keys to functions that will be called on
-  each datum in data. mapping signature should look like `function(datum, i,
-  dataset)` where dataset is an empty array of the returned result
+  each datum in data. mapping function signature looks like `function(datum, i)`
+  and should return a value.
 * `reductions` (_optional_ Object): an object of identical keys to that of
   `mappings` that gets called after each mapping is called on data. iff the
   mapping function **returns** a result, the signature will be
@@ -44,7 +44,7 @@ var reductions = {
     // if current hasn't been set yet (this is the first call of reduce), then
     // just return the result of the first mapping.  otherwise, add them.
     return current == null ? result : current + result; 
-  },
+  }
 }
 
 var collection = collector.collect(data, mappings, reductions);
