@@ -54,7 +54,7 @@ collection.test === 6; // 1 + 2 + 3
 ## License
 (The MIT License)
 
-Copyright (c) Matt Sacks &lt;matt.s.sacks@gmail.com&gt;
+Copyright (c) Matt Sacks
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the 'Software'), to deal in

@@ -26,7 +26,8 @@
     // the returned object
     var collection = {};
 
-    data.forEach(function(datum, i) {
+    for (var i = 0, len = data.length; i < len; i++) {
+      var datum = data[i];
       for (var key in mappings) {
         var map = mappings[key], reduce;
         if (map == null) continue;
@@ -52,7 +53,7 @@
 
         if (result != null) collection[key] = result;
       }
-    });
+    };
 
     return collection;
   };

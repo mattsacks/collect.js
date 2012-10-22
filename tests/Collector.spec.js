@@ -88,3 +88,39 @@ describe("extra", function() {
     });
   });
 });
+
+// performance stuff
+window.generate = function(n) {
+  var data = [];
+  for (var i = 0; i < n; i++) data.push(i);
+  return data;
+};
+
+window.time = function(fn) {
+  console.timeEnd('a');
+  console.time('a');
+  var res = fn();
+  console.timeEnd('a');
+  return res;
+};
+
+window.perf = {
+  mappings: {
+    test: function(x) { return x + 1 }
+  },
+  reductions: {
+    test: function(cur, res) {
+      return cur == null ? res : cur + res;
+    }
+  },
+  data: window.generate(10000),
+  // use as time(perf.fn)
+  fn: function(data, mappings, reductions) {
+    return collector.collect(
+      data       || perf.data,
+      mappings   || perf.mappings,
+      reductions || perf.reductions
+    ).test; // 50005000
+  }
+};
+
