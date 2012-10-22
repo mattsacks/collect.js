@@ -28,6 +28,7 @@
 
     for (var i = 0, len = data.length; i < len; i++) {
       var datum = data[i];
+
       for (var key in mappings) {
         var map = mappings[key], reduce;
         if (map == null) continue;
@@ -51,7 +52,7 @@
           reduce(rolling, result, datum, i) :
           reduce(rolling, datum, i);
 
-        if (result != null) collection[key] = result;
+        collection[key] = result;
       }
     };
 
