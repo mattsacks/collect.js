@@ -1,7 +1,7 @@
 // collector.js v0.1
 // by Matt Sacks <matt.s.sacks@gmail.com>
 
-;(function(window) {
+;(function(namespace) {
   // constructor
   function Collector(options) {
     this.options = options || {};
@@ -60,6 +60,6 @@
   };
 
   // expose class and default instantiation
-  window.Collector = Collector;
-  window.collector = new Collector;
+  namespace.Collector = Collector;
+  namespace.collector = new Collector;
 })(window);
