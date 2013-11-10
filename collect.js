@@ -33,6 +33,13 @@
       };
     }
 
+    // for each key available in maps, call the map and/or reduce function
+    // found on the datum
+    //
+    // - **datum** (): Any non-null item to call each mapreduce function on.
+    // - **i** (): If the data is an Array, then it will be the datum's index.
+    // Otherwise, if the data is an Object, it will be the key for the datum
+    // value.
     function mapreduce(datum, i) {
       for (var key in maps) {
         var mapreduce = maps[key];
@@ -47,7 +54,7 @@
         collection[key] = collection[key] || [];
         return reduce == null ?
           collection[key].push(result) :
-          collection[key] = reduce(rolling, result, datum, id);
+          collection[key] = reduce(rolling, result, datum, i);
       }
     };
 
