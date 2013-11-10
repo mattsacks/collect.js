@@ -30,7 +30,7 @@
     else {
       for (var id in data) {
         mapreduce(data[id], id);
-      };
+      }
     }
 
     // for each key available in maps, call the map and/or reduce function
