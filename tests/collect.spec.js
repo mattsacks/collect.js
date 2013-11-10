@@ -9,7 +9,7 @@ describe("setup", function() {
 
 
 describe("core", function() {
-  var samples, data, maps, totals;
+  var samples, data, maps;
 
   beforeEach(function() {
     // defaults
