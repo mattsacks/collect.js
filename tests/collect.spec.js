@@ -70,19 +70,6 @@ window.perf = {
   },
   fn: function() {
     return collect(perf.data, perf.maps);
-  },
-  alt: function() {
-    var collection = {};
-    for (var key in perf.maps) {
-      for (var i = 0, len = perf.data.length; i < len; i++) {
-        var map = perf.maps[key].map(perf.data[i], i);
-        collection[key] = perf.maps[key].reduce(collection[key], map);
-      }
-    }
-    return collection;
-  },
-  timeAlt: function() {
-    return time(perf.alt);
   }
 };
 
