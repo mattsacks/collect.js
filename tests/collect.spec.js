@@ -32,6 +32,7 @@ describe("core", function() {
       expect(result).to.be.ok();
       expect(result.test).to.be.ok();
 
+
       // reductions shouldn't have been run, so the data should be the same
       expect(result.test).to.be.eql(6);
     });
@@ -69,6 +70,19 @@ window.perf = {
   },
   fn: function() {
     return collect(perf.data, perf.maps);
+  },
+  alt: function() {
+    var collection = {};
+    for (var key in perf.maps) {
+      for (var i = 0, len = perf.data.length; i < len; i++) {
+        var map = perf.maps[key].map(perf.data[i], i);
+        collection[key] = perf.maps[key].reduce(collection[key], map);
+      }
+    }
+    return collection;
+  },
+  timeAlt: function() {
+    return time(perf.alt);
   }
 };
 

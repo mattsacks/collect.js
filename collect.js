@@ -4,6 +4,39 @@
 ;(function() {
   "use strict";
 
+  // which iteration loop to use
+  var isArray = Array.isArray || function isArray(item) {
+    return item.toString() == '[object Array]';
+  };
+
+  // if data is an array, use native map. otherwise, use object map
+  function getMap(data) {
+    if (isArray(data)) {
+      return function(map) {
+        return data.map(map);
+      };
+    }
+    else {
+      return function(map) {
+        var results = [];
+        for (var key in data) {
+          // TODO check for null?
+          results.push(map(data[key], key));
+        }
+        return results;
+      };
+    }
+  };
+
+  // faster implementation of reduce
+  function reduce(data, fn) {
+    var result = null;
+    for (var i = 0, len = data.length; i < len; i++) {
+      result = fn(result, data[i], i);
+    };
+    return result;
+  };
+
   // loops over an array of data and applies a mapping function for each item in
   // the array. after each mapping is applied, a rolling reduction is then
   // called onto the datum.
@@ -15,47 +48,26 @@
   function collect(data, maps, options) {
     if (data == null || data.length === 0 || maps == null) return {};
 
-    // the returned object
+    // the returned hash
     var collection = {};
 
-    var isArray = Array.isArray || function isArray(item) {
-      return item.toString() == '[object Array]';
-    };
+    // get the iterable mapping function
+    var map = getMap(data);
 
-    if (isArray(data)) {
-      for (var i = 0, len = data.length; i < len; i++) {
-        mapreduce(data[i], i);
+    for (var key in maps) {
+      var mapreduce = maps[key];
+      var mapFn = mapreduce.map;
+      var reduceFn = mapreduce.reduce;
+
+      if (mapFn == null) continue;
+      var mapped = map(mapFn);
+
+      if (reduceFn == null) {
+        collection[key] = mapped;
+        continue;
       }
-    }
-    else {
-      for (var id in data) {
-        mapreduce(data[id], id);
-      }
-    }
 
-    // for each key available in maps, call the map and/or reduce function
-    // found on the datum
-    //
-    // - **datum** (): Any non-null item to call each mapreduce function on.
-    // - **i** (): If the data is an Array, then it will be the datum's index.
-    // Otherwise, if the data is an Object, it will be the key for the datum
-    // value.
-    function mapreduce(datum, i) {
-      for (var key in maps) {
-        var mapreduce = maps[key];
-        var map = mapreduce.map;
-        var reduce = mapreduce.reduce;
-
-        if (map == null) return;
-
-        var rolling = collection[key];
-        var result = map(datum, i);
-
-        collection[key] = collection[key] || [];
-        return reduce == null ?
-          collection[key].push(result) :
-          collection[key] = reduce(rolling, result, datum, i);
-      }
+      collection[key] = reduce(mapped, reduceFn);
     };
 
     return collection;

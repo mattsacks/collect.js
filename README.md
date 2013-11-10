@@ -33,9 +33,10 @@ In the browser:
 
 ## Docs
 
-`.collect(data, maps[, options])` - the main function, it takes in a
-dataset and over each item, it runs a `map` and `reduce` function found for each
-key in `maps`.
+`collect(data, maps[, options])`
+
+The main function, it takes in a dataset and over each item, it runs a `map` and
+`reduce` function found for each key in `maps`.
 
 * `data` (Array): an array of data to iterate across
 * `maps` (Object): an object of keys, each value being an object with a `map`
