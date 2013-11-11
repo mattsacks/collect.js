@@ -6,10 +6,10 @@
   "directories": {
     "lib": ".",
     "doc": "README.md",
-    "test": "tests"
+    "test": "test"
   },
   "scripts": {
-    "test": "open tests/index.html"
+    "test": "open test/index.html"
   },
   "repository": {
     "type": "git",
