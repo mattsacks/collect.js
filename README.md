@@ -2,10 +2,9 @@
 
 Client-side MapReduce
 
-## Why
-By defining functions assigned to unique keys in an object, we can use the
-closure to run any code local to whatever the current scope is. Anonymous
-functions make this super awesome. 
+## What
+Utility that calls multiple `map()` and `reduce()` functions over a series of
+data quickly.
 
 ## NPM
 
@@ -53,19 +52,21 @@ var maps = {
   plusOne: {
     map: function(x, i) {
       return x + 1;
-    },
-    reduce: function(res, cur, x, i) {
-      res = res == null ? [] : res;
-
-      var val = {};
-      val[x] = cur;
-
-      res.push(val);
-      return res;
+    }
+  },
+  sum: {
+    reduce: function(result, current, x, i) {
+      return result == null ? current : current + result;
     }
   }
 };
 
-var collection = collect(data, maps);
-collection.plusOne; // [ {0: 1}, {1: 2} , {2: 3} ];
+collect(data, maps); // { plusOne: [1, 2, 3], sum: 3 }
+
+maps.plusOneSum = {
+  map: maps.plusOne.map,
+  reduce: maps.sum.reduce
+};
+
+collect(data,  maps); // { plusOne: [1, 2, 3], sum: 3, plusOneSum: 6 }
 ```

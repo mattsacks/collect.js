@@ -4,12 +4,13 @@
 ;(function() {
   "use strict";
 
-  // which iteration loop to use
+  // Check if item is an array. Defaults to ES5.
   var isArray = Array.isArray || function isArray(item) {
     return item.toString() == '[object Array]';
   };
 
-  // if data is an array, use native map. otherwise, use object map
+  // Return a callback map function.
+  // Native Array.map for Array data. Shorthand map for Objects.
   function getMap(data) {
     if (isArray(data)) {
       return function(map) {
@@ -20,7 +21,6 @@
       return function(map) {
         var results = [];
         for (var key in data) {
-          // TODO check for null?
           results.push(map(data[key], key));
         }
         return results;
@@ -28,22 +28,22 @@
     }
   };
 
-  // faster implementation of reduce
+  // ES5 Array.reduce is slow.
   function reduce(data, fn) {
     var result = null;
     for (var i = 0, len = data.length; i < len; i++) {
       result = fn(result, data[i], i);
-    };
+    }
     return result;
   };
 
-  // loops over an array of data and applies a mapping function for each item in
-  // the array. after each mapping is applied, a rolling reduction is then
-  // called onto the datum.
+  // Loop over a series of data and apply a map and reduce function for each
+  // key in the maps argument. 
   // 
   // - **data** (Array): array of data to call mappings and reductions onto
-  // - **maps** (Object): an object where each key is an object of a map:
-  // and/or reduce: function that will be called on each datum
+  // - **maps** (Object): map and reduce functions. both are optional. if an
+  // object with a top-level map and/or reduce function, only call those.
+  // otherwise, call map and/or reduce for each key found
   // - **options** (Object): options, but none exist yet
   function collect(data, maps, options) {
     if (data == null || data.length === 0 || maps == null) return {};
@@ -59,8 +59,7 @@
       var mapFn = mapreduce.map;
       var reduceFn = mapreduce.reduce;
 
-      if (mapFn == null) continue;
-      var mapped = map(mapFn);
+      var mapped = mapFn == null ? data : map(mapFn);
 
       if (reduceFn == null) {
         collection[key] = mapped;
@@ -68,7 +67,7 @@
       }
 
       collection[key] = reduce(mapped, reduceFn);
-    };
+    }
 
     return collection;
   };
