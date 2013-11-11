@@ -33,8 +33,7 @@
   };
 
   // ES5 Array.reduce is slow.
-  function reduce(data, fn, init) {
-    var result = init != null ? init : null;
+  function reduce(data, fn, result) {
     for (var i = 0, len = data.length; i < len; i++) {
       result = fn(result, data[i], i);
     }

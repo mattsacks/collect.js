@@ -27,7 +27,7 @@ describe("collect", function() {
   });
 
   it("calls a top-level reduce function", function() {
-    var reduce = { reduce: maps.test.reduce };
+    var reduce = { reduce: maps.test.reduce, init: 0 };
     var result = collect(data, reduce);
     expect(result).to.be.ok();
     expect(result).to.be.eql(3);
