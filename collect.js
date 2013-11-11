@@ -14,11 +14,13 @@
   function getMap(data) {
     if (isArray(data)) {
       return function(map) {
-        return data.map(map);
+        return map == null ? data : data.map(map);
       };
     }
     else {
       return function(map) {
+        if (map == null) return data;
+
         var results = [];
         for (var key in data) {
           results.push(map(data[key], key));
@@ -37,14 +39,13 @@
     return result;
   };
 
-  // data (Array or Object) - data to iterate across
   // map (Function) - mapping function defined by getMap()
   // fns (Object) - has a map and/or a reduce function defined
-  function mapreduce(data, map, fns) {
+  function mapreduce(map, fns) {
     var mapFn = fns.map;
     var reduceFn = fns.reduce;
 
-    var mapped = mapFn == null ? data : map(mapFn);
+    var mapped = map(mapFn);
 
     return reduceFn == null ? mapped : reduce(mapped, reduceFn);
   };
@@ -64,12 +65,12 @@
     var map = getMap(data);
 
     if (maps.map != null || maps.reduce != null) {
-      return mapreduce(data, map, maps);
+      return mapreduce(map, maps);
     }
     else {
       var collection = {};
       for (var key in maps) {
-        collection[key] = mapreduce(data, map, maps[key]);
+        collection[key] = mapreduce(map, maps[key]);
       }
       return collection;
     }

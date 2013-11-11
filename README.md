@@ -68,5 +68,6 @@ maps.plusOneSum = {
   reduce: maps.sum.reduce
 };
 
-collect(data,  maps); // { plusOne: [1, 2, 3], sum: 3, plusOneSum: 6 }
+collect(data, maps); // { plusOne: [1, 2, 3], sum: 3, plusOneSum: 6 }
+collect(data, maps.plusOneSum); // 6
 ```
