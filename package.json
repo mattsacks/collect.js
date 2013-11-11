@@ -1,0 +1,30 @@
+{
+  "name": "collect.js",
+  "version": "1.0.0",
+  "description": "MapReduce Utility",
+  "main": "collect.js",
+  "directories": {
+    "lib": ".",
+    "doc": "README.md",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "open test/index.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mattsacks/collect.js.git"
+  },
+  "keywords": [
+    "utility",
+    "function",
+    "map",
+    "reduce",
+    "mapreduce"
+  ],
+  "author": "Matt Sacks",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mattsacks/collect.js/issues"
+  }
+}
