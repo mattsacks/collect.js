@@ -37,14 +37,26 @@
     return result;
   };
 
+  // data (Array or Object) - data to iterate across
+  // map (Function) - mapping function defined by getMap()
+  // fns (Object) - has a map and/or a reduce function defined
+  function mapreduce(data, map, fns) {
+    var mapFn = fns.map;
+    var reduceFn = fns.reduce;
+
+    var mapped = mapFn == null ? data : map(mapFn);
+
+    return reduceFn == null ? mapped : reduce(mapped, reduceFn);
+  };
+
   // Loop over a series of data and apply a map and reduce function for each
   // key in the maps argument. 
   // 
-  // - **data** (Array): array of data to call mappings and reductions onto
-  // - **maps** (Object): map and reduce functions. both are optional. if an
+  // data (Array) - array of data to call mappings and reductions onto
+  // maps (Object) - map and reduce functions. both are optional. if an
   // object with a top-level map and/or reduce function, only call those.
   // otherwise, call map and/or reduce for each key found
-  // - **options** (Object): options, but none exist yet
+  // options (Object) - options, but none exist yet
   function collect(data, maps, options) {
     if (data == null || data.length === 0 || maps == null) return {};
 
@@ -54,22 +66,15 @@
     // get the iterable mapping function
     var map = getMap(data);
 
-    for (var key in maps) {
-      var mapreduce = maps[key];
-      var mapFn = mapreduce.map;
-      var reduceFn = mapreduce.reduce;
-
-      var mapped = mapFn == null ? data : map(mapFn);
-
-      if (reduceFn == null) {
-        collection[key] = mapped;
-        continue;
-      }
-
-      collection[key] = reduce(mapped, reduceFn);
+    if (maps.map != null || maps.reduce != null) {
+      return mapreduce(data, map, maps);
     }
-
-    return collection;
+    else {
+      for (var key in maps) {
+        collection[key] = mapreduce(data, map, maps[key]);
+      }
+      return collection;
+    }
   };
 
   typeof exports == 'undefined' ?
