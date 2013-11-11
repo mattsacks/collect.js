@@ -10,6 +10,7 @@ data.
 
 ```shell
 npm install mattsacks/collect.js
+bower install mattsacks/collect.js
 ```
 
 ## Setup
