@@ -1,0 +1,25 @@
+{
+  "name": "collect.js",
+  "version": "1",
+  "homepage": "https://github.com/mattsacks/collect.js",
+  "authors": [
+    "Matt Sacks <matt.s.sacks@gmail.com>"
+  ],
+  "description": "MapReduce Utility",
+  "main": "collect.js",
+  "keywords": [
+    "utility",
+    "function",
+    "map",
+    "reduce"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

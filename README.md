@@ -1,12 +1,12 @@
 # collect.js
 
-Client-side MapReduce
+MapReduce Utility
 
 ## What
-Utility that calls multiple `map()` and `reduce()` functions over a series of
-data quickly.
+Utility that calls one or more `map()` and `reduce()` functions over a series of
+data.
 
-## NPM
+## Install
 
 ```shell
 npm install mattsacks/collect.js
