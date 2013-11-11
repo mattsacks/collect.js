@@ -1,19 +1,11 @@
 // actual testing
-describe("setup", function() {
-  describe("initialization", function() {
-    it("exposes the right stuff", function() {
-      expect(collect).to.be.ok();
-    });
-  });
-});
-
-
-describe("core", function() {
-  var samples, data, maps;
+describe("collect", function() {
+  var data, hash, maps;
 
   beforeEach(function() {
     // defaults
     data = [0, 1, 2];
+    hash = { zero: 0, one: 1, two: 2 };
     maps = {
       test: {
         map: function(x, i) {
@@ -26,16 +18,44 @@ describe("core", function() {
     };
   });
 
-  describe("collect", function() {
-    it("loops through data and calls mappings on each datum", function() {
-      var result = collect(data, maps);
-      expect(result).to.be.ok();
-      expect(result.test).to.be.ok();
+  it("calls a top-level map function", function() {
+    var map = { map: maps.test.map };
+    var result = collect(data, map);
+    expect(result).to.be.ok();
+    expect(result).to.be.eql([1, 2, 3]);
+  });
 
+  it("calls a top-level reduce function", function() {
+    var reduce = { reduce: maps.test.reduce };
+    var result = collect(data, reduce);
+    expect(result).to.be.ok();
+    expect(result).to.be.eql(3);
+  });
 
-      // reductions shouldn't have been run, so the data should be the same
-      expect(result.test).to.be.eql(6);
-    });
+  it("can map object values", function() {
+    var map = { map: maps.test.map };
+    var result = collect(hash, map);
+
+    expect(result).to.be.ok();
+    expect(result).to.be.eql([1, 2, 3]);
+  });
+
+  it("can map object keys", function() {
+    var map = function(val, key) {
+      return key;
+    };
+    var reduce = maps.test.reduce;
+    var result = collect(hash, { map: map, reduce: reduce });
+
+    expect(result).to.be.ok();
+    expect(result).to.be.eql("twoonezero");
+  });
+
+  it("loops through data and calls mappings on each datum", function() {
+    var result = collect(data, maps);
+    expect(result).to.be.ok();
+    expect(result.test).to.be.ok();
+    expect(result.test).to.be.eql(6);
   });
 });
 
