@@ -9,7 +9,7 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "open test/index.html"
+    "test": "open tests/index.html"
   },
   "repository": {
     "type": "git",
