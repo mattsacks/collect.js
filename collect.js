@@ -60,9 +60,6 @@
   function collect(data, maps, options) {
     if (data == null || data.length === 0 || maps == null) return {};
 
-    // the returned hash
-    var collection = {};
-
     // get the iterable mapping function
     var map = getMap(data);
 
@@ -70,6 +67,7 @@
       return mapreduce(data, map, maps);
     }
     else {
+      var collection = {};
       for (var key in maps) {
         collection[key] = mapreduce(data, map, maps[key]);
       }
@@ -77,7 +75,7 @@
     }
   };
 
-  typeof exports == 'undefined' ?
-    window.collect = collect :
-    module.exports = collect;
+  typeof exports != 'undefined' ?
+    module.exports = collect :
+    window.collect = collect;
 })();
