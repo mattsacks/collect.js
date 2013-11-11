@@ -11,6 +11,8 @@
 
   // Return a callback map function.
   // Native Array.map for Array data. Shorthand map for Objects.
+  //
+  // data (Object, Array) - either an object or array to iterate on
   function getMap(data) {
     if (isArray(data)) {
       return function(map) {
@@ -39,6 +41,8 @@
     return result;
   };
 
+  // DRYd up code that calls a map function for the data passed into collect.
+  //
   // map (Function) - mapping function defined by getMap()
   // fns (Object) - has a map and/or a reduce function defined
   function mapreduce(map, fns) {
@@ -53,10 +57,10 @@
   // Loop over a series of data and apply a map and reduce function for each
   // key in the maps argument. 
   // 
-  // data (Array) - array of data to call mappings and reductions onto
+  // data (Object, Array) - series of data to iterate over
   // maps (Object) - map and reduce functions. both are optional. if an
   // object with a top-level map and/or reduce function, only call those.
-  // otherwise, call map and/or reduce for each key found
+  // otherwise, call map and/or reduce for each key found.
   // options (Object) - options, but none exist yet
   function collect(data, maps, options) {
     if (data == null || data.length === 0 || maps == null) return {};
