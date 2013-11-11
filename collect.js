@@ -31,8 +31,8 @@
   };
 
   // ES5 Array.reduce is slow.
-  function reduce(data, fn) {
-    var result = null;
+  function reduce(data, fn, init) {
+    var result = init != null ? init : null;
     for (var i = 0, len = data.length; i < len; i++) {
       result = fn(result, data[i], i);
     }
@@ -44,10 +44,10 @@
   function mapreduce(map, fns) {
     var mapFn = fns.map;
     var reduceFn = fns.reduce;
+    var init = fns.init;
 
     var mapped = map(mapFn);
-
-    return reduceFn == null ? mapped : reduce(mapped, reduceFn);
+    return reduceFn == null ? mapped : reduce(mapped, reduceFn, init);
   };
 
   // Loop over a series of data and apply a map and reduce function for each
@@ -61,7 +61,6 @@
   function collect(data, maps, options) {
     if (data == null || data.length === 0 || maps == null) return {};
 
-    // get the iterable mapping function
     var map = getMap(data);
 
     if (maps.map != null || maps.reduce != null) {

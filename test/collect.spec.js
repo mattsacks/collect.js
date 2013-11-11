@@ -5,15 +5,16 @@ describe("collect", function() {
   beforeEach(function() {
     // defaults
     data = [0, 1, 2];
-    hash = { zero: 0, one: 1, two: 2 };
+    hash = {zero: 0, one: 1, two: 2};
     maps = {
       test: {
         map: function(x, i) {
           return x + 1;
         },
         reduce: function(res, cur) {
-          return res == null ? cur : cur + res;
-        }
+          return res + cur;
+        },
+        init: 0
       }
     };
   });
@@ -32,8 +33,15 @@ describe("collect", function() {
     expect(result).to.be.eql(3);
   });
 
+  it("supports initial values in reduce", function() {
+    var mapreduce = maps.test;
+    var result = collect(data, mapreduce);
+    expect(result).to.be.ok();
+    expect(result).to.be.eql(6);
+  });
+
   it("can map object values", function() {
-    var map = { map: maps.test.map };
+    var map = {map: maps.test.map};
     var result = collect(hash, map);
 
     expect(result).to.be.ok();
@@ -45,10 +53,10 @@ describe("collect", function() {
       return key;
     };
     var reduce = maps.test.reduce;
-    var result = collect(hash, { map: map, reduce: reduce });
+    var result = collect(hash, {map: map, reduce: reduce, init: ''});
 
     expect(result).to.be.ok();
-    expect(result).to.be.eql("twoonezero");
+    expect(result).to.be.eql("zeroonetwo");
   });
 
   it("loops through data and calls mappings on each datum", function() {
@@ -79,8 +87,9 @@ window.perf = {
     test: {
       map: function(x) { return x + 1 },
       reduce: function(res, cur) {
-        return res == null ? cur : cur + res;
-      }
+        return res + cur;
+      },
+      init: 0
     }
   },
   data: window.generate(10000),

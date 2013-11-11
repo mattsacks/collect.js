@@ -37,14 +37,13 @@ In the browser:
 The main function, it takes in a dataset and over each item, it runs a `map` and
 `reduce` function found for each key in `maps`.
 
-* `data` (Array): an array of data to iterate across
-* `maps` (Object): an object of keys, each value being an object with a `map`
-  and `reduce` function defined
+* `data` (Array, Object): A series of data to run `map` and `reduce`
+  functions on.
+* `maps` (Object): An object with either a top-level `map` and/or `reduce`
+  function defined, or a `map` and/or `reduce` function defined for each key.
 * `options` (_optional_ Object): a hash of options. Currently unused.
 
 ## Example
-A simple map and reduction using numbers.
-
 ```javascript
 var data = [0, 1, 2];
 
@@ -56,7 +55,7 @@ var maps = {
   },
   sum: {
     reduce: function(result, current, x, i) {
-      return result == null ? current : current + result;
+      return result == null ? current : result + current;
     }
   }
 };
@@ -65,7 +64,10 @@ collect(data, maps); // { plusOne: [1, 2, 3], sum: 3 }
 
 maps.plusOneSum = {
   map: maps.plusOne.map,
-  reduce: maps.sum.reduce
+  reduce: function(result, current) {
+    return result + current;
+  },
+  init: 0 // initial value for result
 };
 
 collect(data, maps); // { plusOne: [1, 2, 3], sum: 3, plusOneSum: 6 }
