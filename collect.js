@@ -9,23 +9,31 @@
     return item.toString() == '[object Array]';
   };
 
+  // Raw implementation of Array.map
+  //
+  // array (Array) - An array to iterate across
+  // map (Function) - A map function to call for each item in array
   function arrayMap(array, map) {
     var results = [];
     for (var i = 0, len = array.length; i < len; i++) {
-      results.push(map(array[i], i));
+      results.push(map.call(array, array[i], i));
     }
     return results;
   };
 
+  // Implement Object.map(value, key)
+  //
+  // obj (Object) - An object of keys and values to iterate across
+  // map (Function) - A map function to call for each (value, key) in obj
   function objMap(obj, map) {
     var results = [];
     for (var key in obj) {
-      results.push(map(obj[key], key));
+      results.push(map.call(obj, obj[key], key));
     }
     return results;
   };
 
-  // Native Array.map for Array data. Shorthand map for Objects.
+  // Return an appropriate map function for the given type of data
   //
   // data (Object, Array) - either an object or array to iterate on
   function typeMap(data) {
@@ -41,7 +49,7 @@
     }
   };
 
-  // Return a callback map function.
+  // Figure out the map function for the given array
   //
   // data (Object, Array) - either an object or array to iterate on
   function getMap(data) {
@@ -51,14 +59,17 @@
     };
   };
 
+  // Return a function with reference to the aggregate collection for initial
+  // values.
+  //
+  // collection (Object) - The aggregate collection from collect()
   function getReduce(collection) {
     return function(data, fn, result) {
       result = typeof result == 'string' && collection[result] != null ?
         collection[result] : result;
 
-      // Array.reduce is slow
       for (var i = 0, len = data.length; i < len; i++) {
-        result = fn(result, data[i], i);
+        result = fn.call(data, result, data[i], i);
       }
       return result;
     };
