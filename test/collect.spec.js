@@ -65,6 +65,56 @@ describe("collect", function() {
     expect(result.test).to.be.ok();
     expect(result.test).to.be.eql(6);
   });
+
+  it("can use previously collected mappings", function() {
+    var multipleReduce = {
+      test: {
+        map: function(x) {
+          return x + 1;
+        }
+      },
+      first: {
+        map: 'test',
+        reduce: function(result, current) {
+          return result + current;
+        },
+        init: 0
+      },
+      second: {
+        map: 'test',
+        reduce: function(result, current) {
+          return result * current;
+        },
+        init: 1
+      }
+    };
+
+    var result = collect(data, multipleReduce);
+    var expected = collect(result.test, {
+      first: { reduce: multipleReduce.first.reduce, init: 0 },
+      second: { reduce: multipleReduce.second.reduce, init: 1 }
+    });
+
+    expect(expected).to.be.ok();
+    expect(result).to.be.ok();
+    expect(expected.first).to.be.eql(result.first);
+    expect(expected.second).to.be.eql(result.second);
+  });
+
+  it("can chain reduce results", function() {
+    maps.first = {
+      map: maps.test.map
+    };
+    maps.second = {
+      map: 'first',
+      reduce: maps.test.reduce,
+      init: 'test'
+    };
+    
+    var result = collect(data, maps);
+    expect(result).to.be.ok();
+    expect(result.test*2).to.be.eql(result.second);
+  });
 });
 
 // performance stuff

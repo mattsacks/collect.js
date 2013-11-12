@@ -9,48 +9,73 @@
     return item.toString() == '[object Array]';
   };
 
-  // Return a callback map function.
-  // Native Array.map for Array data. Shorthand map for Objects.
-  //
-  // data (Object, Array) - either an object or array to iterate on
-  function getMap(data) {
+  function typeMap(data) {
     if (isArray(data)) {
       return function(map) {
-        return map == null ? data : data.map(map);
+        return data.map(map);
       };
     }
     else {
       return function(map) {
-        if (map == null) return data;
-
         var results = [];
         for (var key in data) {
           results.push(map(data[key], key));
         }
         return results;
-      };
+      }
     }
   };
 
-  // ES5 Array.reduce is slow.
-  function reduce(data, fn, result) {
-    for (var i = 0, len = data.length; i < len; i++) {
-      result = fn(result, data[i], i);
-    }
-    return result;
+  // Return a callback map function.
+  // Native Array.map for Array data. Shorthand map for Objects.
+  //
+  // data (Object, Array) - either an object or array to iterate on
+  function getMap(data, collection) {
+    function testMap(map, callback) {
+      if (map == null) {
+        return data;
+      }
+      else if (typeof map == 'string' && collection[map] != null) {
+        return collection[map];
+      }
+      else {
+        return callback(map);
+      }
+    };
+
+    var mapFn = typeMap(data);
+    return function(map) {
+      return testMap(map, mapFn);
+    };
+  };
+
+  function getReduce(collection) {
+    return function(data, fn, result) {
+      result = typeof result == 'string' && collection[result] != null ?
+        collection[result] : result;
+
+      // Array.reduce is slow
+      for (var i = 0, len = data.length; i < len; i++) {
+        result = fn(result, data[i], i);
+      }
+      return result;
+    };
   };
 
   // DRYd up code that calls a map function for the data passed into collect.
   //
   // map (Function) - mapping function defined by getMap()
+  // reduce (Function) - reduce function defined by getReduce()
   // fns (Object) - has a map and/or a reduce function defined
-  function mapreduce(map, fns) {
-    var mapFn = fns.map;
-    var reduceFn = fns.reduce;
-    var init = fns.init;
+  function getMapReduce(map, reduce) {
+    return function(fns) {
+      var mapFn = fns.map;
+      var reduceFn = fns.reduce;
+      var init = fns.init;
 
-    var mapped = map(mapFn);
-    return reduceFn == null ? mapped : reduce(mapped, reduceFn, init);
+      var mapped = map(mapFn);
+      return reduceFn == null ? mapped : reduce(mapped, reduceFn, init);
+    };
   };
 
   // Loop over a series of data and apply a map and reduce function for each
@@ -64,15 +89,17 @@
   function collect(data, maps, options) {
     if (data == null || data.length === 0 || maps == null) return {};
 
-    var map = getMap(data);
+    var collection = {};
+    var mapreduce = getMapReduce(
+      getMap(data, collection), getReduce(collection)
+    );
 
     if (maps.map != null || maps.reduce != null) {
-      return mapreduce(map, maps);
+      return mapreduce(maps);
     }
     else {
-      var collection = {};
       for (var key in maps) {
-        collection[key] = mapreduce(map, maps[key]);
+        collection[key] = mapreduce(maps[key]);
       }
       return collection;
     }
