@@ -1,0 +1,187 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Collect.js by mattsacks</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Collect.js</h1>
+        <p>MapReduce Utility</p>
+
+        <p class="view"><a href="https://github.com/mattsacks/collect.js">View the Project on GitHub <small>mattsacks/collect.js</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/mattsacks/collect.js/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/mattsacks/collect.js/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/mattsacks/collect.js">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a name="collectjs" class="anchor" href="#collectjs"><span class="octicon octicon-link"></span></a>collect.js</h1>
+
+<p>MapReduce Utility</p>
+
+<h2>
+<a name="what" class="anchor" href="#what"><span class="octicon octicon-link"></span></a>What</h2>
+
+<p>Utility that calls one or more <code>map()</code> and <code>reduce()</code> functions over a series of
+data.</p>
+
+<h2>
+<a name="install" class="anchor" href="#install"><span class="octicon octicon-link"></span></a>Install</h2>
+
+<pre lang="shell"><code>npm install mattsacks/collect.js
+bower install mattsacks/collect.js
+</code></pre>
+
+<h2>
+<a name="setup" class="anchor" href="#setup"><span class="octicon octicon-link"></span></a>Setup</h2>
+
+<p>Only the <code>collect()</code> function is exposed.</p>
+
+<p>In node:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">collect</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'collect'</span><span class="p">);</span>
+</pre></div>
+
+<p>In the browser:</p>
+
+<div class="highlight highlight-html"><pre><span class="nt">&lt;body&gt;</span>
+  ...
+  <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"collect.min.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;/body&gt;</span>
+</pre></div>
+
+<h2>
+<a name="docs" class="anchor" href="#docs"><span class="octicon octicon-link"></span></a>Docs</h2>
+
+<p><code>collect(data, maps[, options])</code></p>
+
+<p>The main function, it takes in a dataset and over each item, it runs a <code>map</code> and
+<code>reduce</code> function found for each key in <code>maps</code>.</p>
+
+<ul>
+<li>
+<code>data</code> (Array, Object): A series of data to run <code>map</code> and <code>reduce</code>
+functions on.</li>
+<li>
+<code>maps</code> (Object): An object with either a top-level <code>map</code> and/or <code>reduce</code>
+function defined, or a <code>map</code> and/or <code>reduce</code> function defined for each key.</li>
+<li>
+<code>options</code> (<em>optional</em> Object): a hash of options. Currently unused.</li>
+</ul><h2>
+<a name="example" class="anchor" href="#example"><span class="octicon octicon-link"></span></a>Example</h2>
+
+<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">];</span>
+
+<span class="kd">var</span> <span class="nx">maps</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="nx">plusOne</span><span class="o">:</span> <span class="p">{</span>
+    <span class="nx">map</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nx">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="nx">sum</span><span class="o">:</span> <span class="p">{</span>
+    <span class="nx">reduce</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">result</span><span class="p">,</span> <span class="nx">current</span><span class="p">,</span> <span class="nx">x</span><span class="p">,</span> <span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nx">result</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">?</span> <span class="nx">current</span> <span class="o">:</span> <span class="nx">result</span> <span class="o">+</span> <span class="nx">current</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="nx">collect</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">maps</span><span class="p">);</span> <span class="c1">// { plusOne: [1, 2, 3], sum: 3 }</span>
+
+<span class="nx">maps</span><span class="p">.</span><span class="nx">plusOneSum</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="nx">map</span><span class="o">:</span> <span class="nx">maps</span><span class="p">.</span><span class="nx">plusOne</span><span class="p">.</span><span class="nx">map</span><span class="p">,</span>
+  <span class="nx">reduce</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">result</span><span class="p">,</span> <span class="nx">current</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">result</span> <span class="o">+</span> <span class="nx">current</span><span class="p">;</span>
+  <span class="p">},</span>
+  <span class="nx">init</span><span class="o">:</span> <span class="mi">0</span> <span class="c1">// initial value for result</span>
+<span class="p">};</span>
+
+<span class="nx">collect</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">maps</span><span class="p">);</span> <span class="c1">// { plusOne: [1, 2, 3], sum: 3, plusOneSum: 6 }</span>
+<span class="nx">collect</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">maps</span><span class="p">.</span><span class="nx">plusOneSum</span><span class="p">);</span> <span class="c1">// 6</span>
+</pre></div>
+
+<h2>
+<a name="advanced" class="anchor" href="#advanced"><span class="octicon octicon-link"></span></a>Advanced</h2>
+
+<h4>
+<a name="reduce-mapped-data-in-other-maps" class="anchor" href="#reduce-mapped-data-in-other-maps"><span class="octicon octicon-link"></span></a>Reduce mapped data in other maps</h4>
+
+<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">];</span>
+
+<span class="c1">// Reference existing maps within </span>
+<span class="kd">var</span> <span class="nx">maps</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="nx">plusOne</span><span class="o">:</span> <span class="p">{</span>
+    <span class="nx">map</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nx">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="nx">sum</span><span class="o">:</span> <span class="p">{</span>
+    <span class="nx">data</span><span class="o">:</span> <span class="s1">'plusOne'</span><span class="p">,</span>
+    <span class="nx">reduce</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">result</span><span class="p">,</span> <span class="nx">current</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nx">result</span> <span class="o">+</span> <span class="nx">current</span><span class="p">;</span>
+    <span class="p">},</span>
+    <span class="nx">init</span><span class="o">:</span> <span class="mi">0</span>
+  <span class="p">},</span>
+  <span class="nx">times</span><span class="o">:</span> <span class="p">{</span>
+    <span class="nx">data</span><span class="o">:</span> <span class="s1">'plusOne'</span><span class="p">,</span>
+    <span class="nx">reduce</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">result</span><span class="p">,</span> <span class="nx">current</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nx">result</span> <span class="o">*</span> <span class="nx">current</span><span class="p">;</span>
+    <span class="p">},</span>
+    <span class="nx">init</span><span class="o">:</span> <span class="mi">1</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="nx">collect</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">maps</span><span class="p">);</span> <span class="c1">// { plusOne: [1, 2, 3], sum: 6, times: 6 };</span>
+</pre></div>
+
+<h4>
+<a name="context-inside-of-maps" class="anchor" href="#context-inside-of-maps"><span class="octicon octicon-link"></span></a>Context inside of maps</h4>
+
+<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">];</span>
+
+<span class="c1">// Reference existing maps within </span>
+<span class="kd">var</span> <span class="nx">maps</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="nx">plusOne</span><span class="o">:</span> <span class="p">{</span>
+    <span class="nx">map</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nx">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="nx">arrays</span><span class="o">:</span> <span class="p">{</span>
+    <span class="nx">data</span><span class="o">:</span> <span class="s1">'plusOne'</span><span class="p">,</span>
+    <span class="nx">reduce</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">result</span><span class="p">,</span> <span class="nx">current</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">result</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+      <span class="k">return</span> <span class="nx">result</span><span class="p">;</span>
+    <span class="p">},</span>
+    <span class="nx">init</span><span class="o">:</span> <span class="p">[]</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="nx">collect</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">maps</span><span class="p">);</span>
+<span class="c1">// {</span>
+<span class="c1">//   plusOne: [1, 2, 3],</span>
+<span class="c1">//   arrays: [[1, 2, 3], [1, 2, 3], [1, 2, 3]]</span>
+<span class="c1">// }</span>
+</pre></div>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/mattsacks">mattsacks</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
