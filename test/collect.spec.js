@@ -116,6 +116,27 @@ describe("collect", function() {
     expect(result).to.be.ok();
     expect(15).to.be.eql(result.second);
   });
+
+  it("has the context of the dataset", function() {
+    var mapContext = null;
+    var reduceContext = null;
+    maps.context = {
+      map: function(x) {
+        mapContext = this;
+        return x + 1;
+      },
+      reduce: function(result, current) {
+        reduceContext = this;
+        return result + current;
+      },
+      init: 0
+    };
+
+    var result = collect(data, maps);
+    expect(result).to.be.ok();
+    expect(mapContext).to.be.eql(data);
+    expect(reduceContext).to.be.eql([1, 2, 3]);
+  });
 });
 
 // performance stuff
