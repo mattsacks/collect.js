@@ -66,7 +66,7 @@ describe("collect", function() {
     expect(result.test).to.be.eql(6);
   });
 
-  it("can use previously collected mappings", function() {
+  it("can use previously collected data", function() {
     var multipleReduce = {
       test: {
         map: function(x) {
@@ -74,14 +74,14 @@ describe("collect", function() {
         }
       },
       first: {
-        map: 'test',
+        data: 'test',
         reduce: function(result, current) {
           return result + current;
         },
         init: 0
       },
       second: {
-        map: 'test',
+        data: 'test',
         reduce: function(result, current) {
           return result * current;
         },
@@ -101,19 +101,20 @@ describe("collect", function() {
     expect(expected.second).to.be.eql(result.second);
   });
 
-  it("can chain reduce results", function() {
+  it("can chain results", function() {
     maps.first = {
       map: maps.test.map
     };
     maps.second = {
-      map: 'first',
+      data: 'first',
+      map: maps.test.map,
       reduce: maps.test.reduce,
       init: 'test'
     };
     
     var result = collect(data, maps);
     expect(result).to.be.ok();
-    expect(result.test*2).to.be.eql(result.second);
+    expect(15).to.be.eql(result.second);
   });
 });
 
