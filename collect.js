@@ -37,23 +37,21 @@
   //
   // data (Object, Array) - either an object or array to iterate on
   function typeMap(data) {
-    if (isArray(data)) {
-      return function(map) {
-        return arrayMap(data, map);
-      };
-    }
-    else {
-      return function(map) {
-        return objMap(data, map);
-      };
-    }
+    // fn (Function) - the iterator to use for the given data-type
+    var fn = isArray(data) ? arrayMap : objMap;
+    return function(map) {
+      return fn(data, map);
+    };
   };
 
   // Figure out the map function for the given array
   //
   // data (Object, Array) - either an object or array to iterate on
   function getMap(data) {
+    // get the correct iterating map function for the data type
     var mapFn = typeMap(data);
+    // return a function that accepts a map callback function.
+    // if one isn't defined, return the data. otherwise, map.
     return function(map) {
       return map == null ? data : mapFn(map);
     };
@@ -79,8 +77,10 @@
   //
   // map (Function) - mapping function defined by getMap()
   // reduce (Function) - reduce function defined by getReduce()
-  // fns (Object) - has a map and/or a reduce function defined
   function getMapReduce(map, reduce) {
+    // return a function that takes an object with callbacks defined.
+    // fns (Object) - has a map() and/or a reduce() that may have a init value
+    // newMap(
     return function(fns, newMap) {
       var mapFn = fns.map;
       var reduceFn = fns.reduce;
@@ -103,6 +103,7 @@
     if (data == null || data.length === 0 || maps == null) return {};
 
     var collection = {};
+    // get a cached mapreduce function with a map and reduce callback defined
     var mapreduce = getMapReduce(getMap(data), getReduce(collection));
 
     if (maps.map != null || maps.reduce != null) {
@@ -111,8 +112,13 @@
     else {
       for (var key in maps) {
         var fns = maps[key];
-        var altData = typeof fns.data == 'string' && collection[fns.data];
-        var altMap = !!altData && getMap(altData);
+        var altMap = null;
+
+        // if the 'data' attribute is defined and exists on the collection,
+        // use that as the data source
+        if (typeof fns.data == 'string' && collection[fns.data] != null) {
+          altMap = getMap(collection[fns.data]);
+        }
         collection[key] = mapreduce(fns, altMap);
       }
       return collection;
