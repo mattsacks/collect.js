@@ -77,7 +77,7 @@ collect(data, maps.plusOneSum); // 6
 
 ## Advanced
 
-#### Reduce mapped data in other maps
+#### Reduce on mapped data
 ```javascript
 var data = [0, 1, 2];
 
@@ -105,6 +105,33 @@ var maps = {
 };
 
 collect(data, maps); // { plusOne: [1, 2, 3], sum: 6, times: 6 };
+```
+
+#### Reduce from a reduced result
+```javascript
+var data = [0, 1, 2];
+
+// Init from the result of another reduce
+var maps = {
+  plusOneSum: {
+    map: function(x) {
+      return x + 1;
+    },
+    reduce: function(result, current) {
+      return result + current;
+    },
+    init: 0
+  },
+  sumPlusOneSum: {
+    // 6 + 0 + 1 + 2
+    reduce: function(result, current) {
+      return result + current;
+    },
+    init: 'plusOneSum'
+  }
+};
+
+collect(data, maps); // { plusOneSum: 6, sumPlusOneSum: 9 }
 ```
 
 #### Context inside of maps
