@@ -44,6 +44,10 @@ The main function, it takes in a dataset and over each item, it runs a `map` and
   function defined, or a `map` and/or `reduce` function defined for each key.
 * `options` (_optional_ Object): a hash of options. Currently unused.
 
+## Speed
+
+`O(n * (number of map and reduce functions defined))`
+
 ## Example
 ```javascript
 var data = [0, 1, 2];
