@@ -82,6 +82,11 @@ function defined, or a <code>map</code> and/or <code>reduce</code> function defi
 <li>
 <code>options</code> (<em>optional</em> Object): a hash of options. Currently unused.</li>
 </ul><h2>
+<a name="speed" class="anchor" href="#speed"><span class="octicon octicon-link"></span></a>Speed</h2>
+
+<p><code>O(n * (number of map and reduce functions defined))</code></p>
+
+<h2>
 <a name="example" class="anchor" href="#example"><span class="octicon octicon-link"></span></a>Example</h2>
 
 <div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">];</span>
@@ -117,7 +122,7 @@ function defined, or a <code>map</code> and/or <code>reduce</code> function defi
 <a name="advanced" class="anchor" href="#advanced"><span class="octicon octicon-link"></span></a>Advanced</h2>
 
 <h4>
-<a name="reduce-mapped-data-in-other-maps" class="anchor" href="#reduce-mapped-data-in-other-maps"><span class="octicon octicon-link"></span></a>Reduce mapped data in other maps</h4>
+<a name="reduce-on-mapped-data" class="anchor" href="#reduce-on-mapped-data"><span class="octicon octicon-link"></span></a>Reduce on mapped data</h4>
 
 <div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">];</span>
 
@@ -145,6 +150,34 @@ function defined, or a <code>map</code> and/or <code>reduce</code> function defi
 <span class="p">};</span>
 
 <span class="nx">collect</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">maps</span><span class="p">);</span> <span class="c1">// { plusOne: [1, 2, 3], sum: 6, times: 6 };</span>
+</pre></div>
+
+<h4>
+<a name="reduce-from-a-reduced-result" class="anchor" href="#reduce-from-a-reduced-result"><span class="octicon octicon-link"></span></a>Reduce from a reduced result</h4>
+
+<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">];</span>
+
+<span class="c1">// Init from the result of another reduce</span>
+<span class="kd">var</span> <span class="nx">maps</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="nx">plusOneSum</span><span class="o">:</span> <span class="p">{</span>
+    <span class="nx">map</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nx">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="p">},</span>
+    <span class="nx">reduce</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">result</span><span class="p">,</span> <span class="nx">current</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nx">result</span> <span class="o">+</span> <span class="nx">current</span><span class="p">;</span>
+    <span class="p">},</span>
+    <span class="nx">init</span><span class="o">:</span> <span class="mi">0</span>
+  <span class="p">},</span>
+  <span class="nx">sumPlusOneSum</span><span class="o">:</span> <span class="p">{</span>
+    <span class="c1">// 6 + 0 + 1 + 2</span>
+    <span class="nx">reduce</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">result</span><span class="p">,</span> <span class="nx">current</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nx">result</span> <span class="o">+</span> <span class="nx">current</span><span class="p">;</span>
+    <span class="p">},</span>
+    <span class="nx">init</span><span class="o">:</span> <span class="s1">'plusOneSum'</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="nx">collect</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">maps</span><span class="p">);</span> <span class="c1">// { plusOneSum: 6, sumPlusOneSum: 9 }</span>
 </pre></div>
 
 <h4>
